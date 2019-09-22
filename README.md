@@ -19,6 +19,9 @@ for example `./aredn_ss_arm &` (for long term - better to use `screen` or other 
 Trying to execute this file on a disconnected machine will result in error.
 
 Once the app is running, add it to your services in your local node,
-the server publish port 8081.
+the server publish port 80.
+
+![alt text](https://github.com/geostant/aredn_discovery/raw/master/example.png "Logo Title Text 1")
+
 <br><br><br>
 **I'm always happy to receive any feedback (negative and positive) and other ideas on enhancing this tool.**
