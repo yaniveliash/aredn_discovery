@@ -110,12 +110,36 @@ func getNodes() string {
 }
 
 func main() {
-
-	f, err := os.Create("static/index.html")
+	// Check or Create static directory
+	if _, err := os.Stat("static/"); os.IsNotExist(err) {
+		os.Mkdir("static/", 0755)
+		os.Mkdir("static/style", 0755)
+	}
+	style, err := os.Create("static/style/style.css")
 	check(err)
-	defer f.Close()
+	defer style.Close()
 
-	w := bufio.NewWriter(f)
+	ws := bufio.NewWriter(style)
+
+	// Generating CSS Style file
+	ws.WriteString(".content { \n")
+	ws.WriteString("	max-width: 500px; \n")
+	ws.WriteString("	margin: auto; \n}\n\n")
+	ws.WriteString("table { \n")
+	ws.WriteString("	border-collapse: collapse; \n}\n\n")
+	ws.WriteString("table, th, td { \n")
+	ws.WriteString("	border: 1px solid black; \n}\n\n")
+	ws.WriteString("th, td { \n")
+	ws.WriteString("	padding: 15px; \n")
+	ws.WriteString("	text-align: left; \n}\n")
+
+	ws.Flush()
+
+	html, err := os.Create("static/index.html")
+	check(err)
+	defer html.Close()
+
+	w := bufio.NewWriter(html)
 
 	w.WriteString("<link rel=\"stylesheet\" type=\"text/css\" href=\"style/style.css\">")
 	w.WriteString("<body><div class=\"content\">")
@@ -129,5 +153,5 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir("./static")))
 
-	log.Fatal(http.ListenAndServe(":8081", nil))
+	log.Fatal(http.ListenAndServe(":80", nil))
 }
