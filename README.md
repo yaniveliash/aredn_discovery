@@ -12,6 +12,8 @@ Compile with `go build` for your desired architecture
 - Cross compile for OSX: `GOOS=darwin GOARCH=amd64 go build -o aredn_ss_osx`
 - Cross compile for Linux: `GOOS=linux GOARCH=amd64 go build -o aredn_ss_linux`
 
+> Pre-Compiled can be found [here](https://github.com/geostant/aredn_discovery/releases)
+
 # Usage
 Run on a raspberry pi or any other machine that connected to the AREDN network by executing the file and running it in the background,
 for example `./aredn_ss_arm &` (for long term - better to use `screen` or other method to run on boot in the background)
