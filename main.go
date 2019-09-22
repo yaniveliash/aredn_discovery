@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -56,7 +57,7 @@ func getService() string {
 
 	err := json.Unmarshal(respByte, &services)
 	check(err)
-	result := "<h1>AREDN IL SERVICES</h1>"
+	result := "<h1>AREDN VISIBLE SERVICES</h1>"
 	result = result + "<table><tr>"
 	for i := 0; i < len(services.Services); i++ {
 		result = result + "<th><a href=\""
@@ -64,6 +65,10 @@ func getService() string {
 		result = result + "/\">"
 		result = result + (services.Services[i].Name)
 		result = result + "</a></th>"
+		// New table line for each 5 records
+		if (i+1)%5 == 0 {
+			result = result + "</tr><tr>"
+		}
 	}
 
 	result = result + "</tr></table><br>"
@@ -82,7 +87,7 @@ func getNodes() string {
 	check(err)
 
 	//Creating table
-	result := "<h1>AREDN IL NODES</h1>"
+	result := "<h1>AREDN VISIBLE NODES</h1>"
 	result = result + "<table><tr>"
 	for i := 0; i < len(nodes.Nodes); i++ {
 		result = result + "<th><a href=\"http://"
@@ -90,6 +95,10 @@ func getNodes() string {
 		result = result + "/\">"
 		result = result + (nodes.Nodes[i].Name)
 		result = result + "</a></th>"
+		// New table line for each 5 records
+		if (i+1)%5 == 0 {
+			result = result + "</tr><tr>"
+		}
 	}
 
 	result = result + "</tr></table><br>"
@@ -101,21 +110,14 @@ func getNodes() string {
 }
 
 func main() {
-	if _, err := os.Stat("www"); os.IsNotExist(err) {
-		err := os.Mkdir("www", 0755)
-		check(err)
-	}
 
-	f, err := os.Create("www/nodes.html")
+	f, err := os.Create("static/index.html")
 	check(err)
 	defer f.Close()
 
 	w := bufio.NewWriter(f)
 
-	w.WriteString("<style>.content { max-width: 500px; margin: auto; } ")
-	w.WriteString("table { border-collapse: collapse; } ")
-	w.WriteString("table, th, td { border: 1px solid black; } ")
-	w.WriteString("th, td { padding: 15px; text-align: left; } </style>")
+	w.WriteString("<link rel=\"stylesheet\" type=\"text/css\" href=\"style/style.css\">")
 	w.WriteString("<body><div class=\"content\">")
 
 	w.WriteString(getNodes())
@@ -124,4 +126,8 @@ func main() {
 	w.WriteString("</div></body>")
 
 	w.Flush()
+
+	http.Handle("/", http.FileServer(http.Dir("./static")))
+
+	log.Fatal(http.ListenAndServe(":8081", nil))
 }
