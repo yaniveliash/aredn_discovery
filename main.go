@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 )
 
@@ -49,6 +50,12 @@ func getUrl(url string) []byte {
 	return respByte
 }
 
+func extractHost(s string) string {
+	var r = regexp.MustCompile("http://([^:]+)")
+	res := r.FindStringSubmatch(s)
+	return res[1]
+}
+
 // getServices list all the visible services in the network
 func getService() string {
 	var services Services
@@ -64,7 +71,8 @@ func getService() string {
 		result = result + (services.Services[i].Link)
 		result = result + "/\">"
 		result = result + (services.Services[i].Name)
-		result = result + "</a></th>"
+		result = result + "</a><br><small>by " + extractHost(services.Services[i].Link)
+		result = result + "</small></th>"
 		// New table line for each 5 records
 		if (i+1)%5 == 0 {
 			result = result + "</tr><tr>"
@@ -109,12 +117,11 @@ func getNodes() string {
 	return result
 }
 
-func main() {
-	// Check or Create static directory
-	if _, err := os.Stat("static/"); os.IsNotExist(err) {
-		os.Mkdir("static/", 0755)
+func generateCSS() {
+	if _, err := os.Stat("static/style/"); os.IsNotExist(err) {
 		os.Mkdir("static/style", 0755)
 	}
+
 	style, err := os.Create("static/style/style.css")
 	check(err)
 	defer style.Close()
@@ -122,18 +129,31 @@ func main() {
 	ws := bufio.NewWriter(style)
 
 	// Generating CSS Style file
-	ws.WriteString(".content { \n")
-	ws.WriteString("	max-width: 500px; \n")
-	ws.WriteString("	margin: auto; \n}\n\n")
+	ws.WriteString("body {\n")
+	ws.WriteString("	font-family:verdana;\n}\n\n")
+	ws.WriteString(".content {\n")
+	ws.WriteString("	max-width: 1024px;\n")
+	ws.WriteString("	margin: auto;\n}\n\n")
 	ws.WriteString("table { \n")
 	ws.WriteString("	border-collapse: collapse; \n}\n\n")
 	ws.WriteString("table, th, td { \n")
 	ws.WriteString("	border: 1px solid black; \n}\n\n")
 	ws.WriteString("th, td { \n")
 	ws.WriteString("	padding: 15px; \n")
-	ws.WriteString("	text-align: left; \n}\n")
+	ws.WriteString("	text-align: left; \n}\n\n")
+	ws.WriteString("small {\n")
+	ws.WriteString("	font-size: smaller;\n}\n")
 
 	ws.Flush()
+}
+
+func main() {
+	// Check or Create static directory
+	if _, err := os.Stat("static/"); os.IsNotExist(err) {
+		os.Mkdir("static/", 0755)
+	}
+
+	generateCSS()
 
 	html, err := os.Create("static/index.html")
 	check(err)

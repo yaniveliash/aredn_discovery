@@ -23,7 +23,11 @@ Trying to execute this file on a disconnected machine will result in error.
 Once the app is running, add it to your services in your local node,
 the server publish port 80.
 
-![alt text](https://github.com/geostant/aredn_discovery/raw/master/example.png "Logo Title Text 1")
+Setup the directory service as any other service (I like to name my host as `directory`)
+![alt text](service_setup.png)
 
-<br><br><br>
+How the screen will looks like, populated with nodes and services
+![alt text](example.png)
+
+<br>
 **I'm always happy to receive any feedback (negative and positive) and other ideas on enhancing this tool.**
